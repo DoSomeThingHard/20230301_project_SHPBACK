@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入echart依赖包 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.1/echarts.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="box1" style="width: 600px; height:300px; border:1px solid #000"></div>
+</body>
+
+</html>
+<script>
+    // 基于准备好的dom，初始化echarts实例
+    var myChart1 = echarts.init(document.querySelector('.box1'));
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: 'ECharts 入门示例',
+            subtext: '副标题',
+        },
+        tooltip: {  // 提示组件 鼠标移上去出现
+            textStyle: {
+                color: 'red'    // 提示框文字颜色
+            }
+        },
+        legend: {   // 可以切换系列的展示
+            data: ['柱状图', '折线图']
+        },
+        toolbox: {   // 工具栏
+            show: true,
+            feature: {
+                dataZoom: {
+                    yAxisIndex: "none"
+                },
+                dataView: {
+                    readOnly: false
+                },
+                magicType: {
+                    type: ["line", "bar"]
+                },
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        grid:{  // 调整布局
+            left:30,
+            right: 30,
+        },
+        dataZoom:{},
+        xAxis: {
+            data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+        },
+        yAxis: [{
+            axisLine:{show: true},
+            axisTick:{show: true}
+        },{
+            axisLine:{show: true},
+            axisTick:{show: true}
+        }],
+        series: [
+            {
+                name: '柱状图',
+                type: 'bar',
+                data: [5, 20, 36, 10, 10, 20],
+                // 用的是yAxis数组中下标是0的y轴
+                yAxisIndex: 0
+            },
+            {
+                name: '折线图',
+                type: 'line',
+                data: [5, 20, 36, 10, 90, 20],
+                // 用的是yAxis数组中下标是1的y轴
+                yAxisIndex: 1
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart1.setOption(option);
+</script>
