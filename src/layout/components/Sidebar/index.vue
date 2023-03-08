@@ -31,7 +31,10 @@ export default {
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      // 这里遍历的路由不对 遍历的都是常量路由
+      // return this.$router.options.routes
+      // 我们使用vuex里面的计算好的路由
+      return this.$store.state.user.resultAllRoutes
     },
     activeMenu() {
       const route = this.$route

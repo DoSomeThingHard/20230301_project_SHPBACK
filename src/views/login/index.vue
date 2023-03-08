@@ -101,6 +101,7 @@ export default {
       })
     },
     handleLogin() {
+      // 验证表单的正确性
       this.$refs.loginForm.validate(async valid => {
         if (valid) {
           this.loading = true
