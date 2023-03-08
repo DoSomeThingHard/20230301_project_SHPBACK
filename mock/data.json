@@ -1,0 +1,22 @@
+{
+    "salesTotal":1,
+    "admin":"liu",
+    "list":{
+        "activityGrowthLastDay": -17.7,
+        "activityGrowthLastMonth": 47.12,
+        "activityRate": 78,
+        "orderFullYear": [10, 52, 200, 334, 390, 330, 220,1,2,3,4,45],
+        "orderFullYearAxis": ["1月", "2月", "3月", "4月", "5月", "6月", "七月","八月","九月","十月","十一月","十二月"],
+        "patRate": 60.2,
+        "patTotal": 182425,
+        "patTrend": [],
+        "saleRank": {},
+        "salesGrowthLastDay":-19.16,
+        "salesGrowthLastMonth": 56.67,
+        "salesToday": 112356,
+        "salesTotal": 114779,
+        "searchWord":[],
+        "userFullYear": [334, 390, 330, 220,1,2,3,4,45,10, 52, 200],
+        "userFullYearAxis": ["一月", "二月", "三月", "四月", "五月", "六月", "七月","八月","九月","十月","十一月","十二月"]
+    }
+}
