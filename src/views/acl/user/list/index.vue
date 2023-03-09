@@ -16,12 +16,12 @@
     </div>
 
     <!-- table表格 展示用户列表 -->
-    <el-table stripe border v-loading='listLoading' :data="users" @selection-change="handleSelectionChange">
+    <el-table stripe border v-loading='listLoading' :data="user" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
         <el-table-column prop="username" label="用户名" width="150"></el-table-column>
-        <el-table-column prop="nickname" label="用户昵称"></el-table-column>
-        <el-table-column prop="rolename" label="权限列表"></el-table-column>
+        <el-table-column prop="nickName" label="用户昵称"></el-table-column>
+        <el-table-column prop="roleName" label="权限列表"></el-table-column>
         <el-table-column prop="gmtCreate" label="创建时间" width="180"></el-table-column>
         <el-table-column prop="gmtModified" label="更新时间" width="180"></el-table-column>
 
@@ -44,17 +44,17 @@
         layout="prev, pager, next, jumper, ->, sizes, total"
         @size-change="handleSizeChange"
         @current-change="getUsers"
-        :page-sizes="[10, 20, 50]"
+        :page-sizes="[5, 10, 15]"
         >
     </el-pagination>
-
+    <!-- 设置用户相关 -->
     <el-dialog :title="user.id?'修改用户':'添加用户'" :visible.sync="dialogUserVisible">
         <el-form :model="user" ref="userForm" :rules="userRules" label-width="120px">
             <el-form-item label="用户名" prop="username">
                 <el-input v-model="user.username"></el-input>
             </el-form-item>
             <el-form-item label="用户昵称">
-                <el-input v-model="user.nickname"></el-input>
+                <el-input v-model="user.nickName"></el-input>
             </el-form-item>
             <el-form-item label="用户密码" v-if="!user.id" prop="password">
                 <el-input v-model="user.password"></el-input>
@@ -65,22 +65,24 @@
             <el-button :loading="loading" type="primary" @click="addOrUpdate">确 定</el-button>
         </div>
     </el-dialog>
-
+    <!-- 设置角色相关 -->
     <el-dialog title="设置角色" :visible.sync="dialogRoleVisible" :before-close="resetRoleData">
         <el-form label-width="80px">
             <el-form-item label="用户名">
                 <el-input disabled :value="user.username"></el-input>
             </el-form-item>
             <el-form-item label="角色列表">
+                <!-- 全选按钮 -->
                 <el-checkbox :indeterminate='isIndeterminate' v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
                 <div style="margin: 15px 0;"></div>
+                <!-- 这个是集群 然后数据搜集在 userRoleIds 这个数组中 -->
                 <el-checkbox-group v-model="userRoleIds" @change="handleCheckedChange">
-                    <el-checkbox v-for="role in allRoles" :label="role.id" :key="role.id">{{role.rolename}}</el-checkbox>
+                    <el-checkbox v-for="role in allRoles" :key="role.id" :label="role.id">{{role.roleName}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
         </el-form>
         <div slot="footer">
-            <el-button :loading='loading' type="primary" @click="assignRole = false">保存</el-button>
+            <el-button :loading='loading' type="primary" @click="assignRole">保存</el-button>
             <el-button @click="resetRoleData">取消</el-button>
         </div>
     </el-dialog>
@@ -103,7 +105,7 @@ export default {
             selectedIds:[],   // 所有选择的user的id的数组
             users:[],   // 当前页的用户列表
             page: 1,    //当前页码
-            limit: 3,   // 每页数量
+            limit: 5,   // 每页数量
             total: 0,   //总数量
             user: {},   // 当前要操作的user
             dialogUserVisible: false,   // 是否显示用户添加/修改的dialog
@@ -119,7 +121,7 @@ export default {
             loading: false, // 是否正在提交
             dialogRoleVisible: false,   // 是否显示角色dialog
             allRoles:[],    // 所有角色列表
-            userRoleIds:[], // 用户角色id的列表
+            userRoleIds:[], // 选中的用户角色id的列表
             isIndeterminate: false, // 是否是不确定的
             checkAll : false,     // 是否全选
         }
@@ -131,7 +133,7 @@ export default {
         // 显示指定角色的界面
         showAssignRole(user){
             this.user = user
-            this.dialogUserVisible = true
+            this.dialogRoleVisible = true
             this.getRoles()
         },
         // 全选 value是布尔值 true和false
@@ -144,9 +146,11 @@ export default {
         // 异步获取用户角色列表
         async getRoles(){
             const result = await this.$API.user.getRoles(this.user.id)
+            // assignRoles是用户的角色  allRolesList是全部角色
             const {allRolesList, assignRoles} = result.data
             this.allRoles = allRolesList
             this.userRoleIds = assignRoles.map(item => item.id)
+            // 是否全选
             this.checkAll = allRolesList.length === assignRoles.length
             this.isIndeterminate = assignRoles.length > 0 && assignRoles.length < allRolesList.length
         },
@@ -160,8 +164,10 @@ export default {
         async assignRole(){
             const userId = this.user.id
             const roleIds = this.userRoleIds.join(',')  //数组转为字符串
+            // 1633660182010216450
+            console.log(userId,roleIds)
             this.loading = true
-            const result = await this.$API.user.assignRoles(userId, roleIds)
+            const result = await this.$API.user.assignRoles(userId,roleIds)
             this.loading = false
             this.$message.success(result.message || '分配角色成功')
             this.resetRoleData()
@@ -190,7 +196,7 @@ export default {
         },
         // 根据输入进行搜索
         search(){
-            this.searchObj = {...this.temSearchObj}
+            this.searchObj = {...this.tempSearchObj}
             this.getUsers()
         },
         // 重置机输入后搜索
@@ -198,7 +204,7 @@ export default {
             this.searchObj = {
                 username : ''
             }
-            this.temSearchObj = {
+            this.tempSearchObj = {
                 username : ''
             }
             this.getUsers()
@@ -245,6 +251,7 @@ export default {
             const{limit, searchObj} = this
             this.listLoading = true
             const result = await this.$API.user.getPageList(page,limit,searchObj)
+            console.log(result)
             this.listLoading = false
             const {items, total}  = result.data
             this.user = items.filter(item => item.username !== 'admin')
@@ -261,9 +268,31 @@ export default {
             this.dialogUserVisible = false
             this.user = {}
         },
+        // 新增或者修改用户
+        addOrUpdate(){
+            // 验证表单
+            this.$refs.userForm.validate(async (valid) => {
+                if (valid) {
+                    this.dialogUserVisible = false;
+                    // 发请求
+                    let result = await this.$API.user.addOrUpdateUser(this.user);
+                    if (result.code == 20000) {
+                        // 弹出一个
+                        // this.$message(this.tmForm.id? '修改成功':'新增成功');
+                        this.$message({
+                            type: "success",
+                            message: this.user.id ? "修改成功" : "新增成功",
+                        });
+                        // 添加之后重新请求数据
+                        this.getUsers(this.user.id ? this.page : 1);
+                    } else {
 
-
-        addOrUpdate(){},
+                    }
+                } else {
+                    return false;
+                }
+            });
+        },
     },
 }
 </script>

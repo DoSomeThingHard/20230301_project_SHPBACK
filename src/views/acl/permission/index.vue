@@ -4,7 +4,9 @@
 
 <script>
 export default {
-
+  mounted(){
+    console.log('ssssssddddd')
+  }
 }
 </script>
 

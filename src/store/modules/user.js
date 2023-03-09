@@ -47,6 +47,7 @@ const mutations = {
     state.resultAsyncRoutes = asyncRoutes;
     // 计算出全部需要的路由
     state.resultAllRoutes = constantRoutes.concat(state.resultAsyncRoutes,anyRoutes)
+    console.log('路由信息', state.resultAllRoutes)
     // 给路由器添加新的路由
     router.addRoutes(state.resultAllRoutes)
   }
